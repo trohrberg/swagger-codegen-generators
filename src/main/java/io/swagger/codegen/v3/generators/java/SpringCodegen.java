@@ -802,12 +802,13 @@ public class SpringCodegen extends AbstractJavaCodegen implements BeanValidation
                 e.printStackTrace();
             }
         }
-        additionalProperties.put("parent", modelInheritanceSupportInGson(allModels));
+
+        additionalProperties.put("parent", modelInheritanceSupport(allModels));
 
         return allProcessedModels;
     }
 
-    protected List<Map<String, Object>> modelInheritanceSupportInGson(List<?> allModels) {
+    protected List<Map<String, Object>> modelInheritanceSupport(List<?> allModels) {
         Map<CodegenModel, List<CodegenModel>> byParent = new LinkedHashMap<>();
         for (Object model : allModels) {
             Map entry = (Map) model;
@@ -816,6 +817,7 @@ public class SpringCodegen extends AbstractJavaCodegen implements BeanValidation
                 byParent.computeIfAbsent(parent, k -> new LinkedList<>()).add((CodegenModel)entry.get("model"));
             }
         }
+
         List<Map<String, Object>> parentsList = new ArrayList<>();
         for (Map.Entry<CodegenModel, List<CodegenModel>> parentModelEntry : byParent.entrySet()) {
             CodegenModel parentModel = parentModelEntry.getKey();
