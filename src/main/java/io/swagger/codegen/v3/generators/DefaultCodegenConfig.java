@@ -305,7 +305,11 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
                     Map<String, String> enumVar = new HashMap<String, String>();
                     String enumName = findEnumName(truncateIdx, value);
                     enumVar.put("name", toEnumVarName(enumName, cm.dataType));
-                    enumVar.put("value", toEnumValue(value.toString(), cm.dataType));
+                    if (value == null) {
+                        enumVar.put("value", toEnumValue(null, cm.dataType));
+                    } else {
+                        enumVar.put("value", toEnumValue(value.toString(), cm.dataType));
+                    }
                     enumVars.add(enumVar);
                 }
                 cm.allowableValues.put("enumVars", enumVars);
@@ -320,6 +324,9 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
     }
 
     private String findEnumName(int truncateIdx, Object value) {
+        if (value == null) {
+            return "null";
+        }
         String enumName;
         if (truncateIdx == 0) {
             enumName = value.toString();
@@ -370,6 +377,9 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
      * @return the sanitized value for enum
      */
     public String toEnumValue(String value, String datatype) {
+        if (value == null) {
+            return null;
+        }
         if ("number".equalsIgnoreCase(datatype)) {
             return value;
         } else {
@@ -1231,6 +1241,9 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
      * @return Codegen Model object
      */
     public CodegenModel fromModel(String name, Schema schema) {
+        if (openAPI != null && openAPI.getComponents() != null && openAPI.getComponents().getSchemas() != null) {
+            return fromModel(name, schema, openAPI.getComponents().getSchemas());
+        }
         return fromModel(name, schema, null);
     }
 
@@ -1265,8 +1278,6 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
             codegenModel.getVendorExtensions().putAll(schema.getExtensions());
         }
         codegenModel.getVendorExtensions().put(CodegenConstants.IS_ALIAS_EXT_NAME, typeAliases.containsKey(name));
-
-        codegenModel.discriminator = schema.getDiscriminator();
 
         if (schema.getXml() != null) {
             codegenModel.xmlPrefix = schema.getXml().getPrefix();
@@ -1332,6 +1343,14 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
             final List<Schema> allOf = composed.getAllOf();
             // interfaces (intermediate models)
             if (allOf != null && !allOf.isEmpty()) {
+
+                if (schema.getDiscriminator() != null) {
+                    codegenModel.discriminator = schema.getDiscriminator();
+                    if (codegenModel.discriminator != null && codegenModel.discriminator.getPropertyName() != null) {
+                        codegenModel.discriminator.setPropertyName(toVarName(codegenModel.discriminator.getPropertyName()));
+                    }
+                }
+
                 for (int i = 0; i < allOf.size(); i++) {
                     if (i == 0 && !copyFistAllOfProperties) {
                         continue;
@@ -3778,7 +3797,11 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
             Map<String, String> enumVar = new HashMap<String, String>();
             String enumName = findEnumName(truncateIdx, value);
             enumVar.put("name", toEnumVarName(enumName, var.datatype));
-            enumVar.put("value", toEnumValue(value.toString(), var.datatype));
+            if (value == null) {
+                enumVar.put("value", toEnumValue(null, var.datatype));
+            } else {
+                enumVar.put("value", toEnumValue(value.toString(), var.datatype));
+            }
             enumVars.add(enumVar);
         }
         allowableValues.put("enumVars", enumVars);
