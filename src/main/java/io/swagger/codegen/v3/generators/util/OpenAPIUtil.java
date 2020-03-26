@@ -33,7 +33,10 @@ public class OpenAPIUtil {
     public static String getSimpleRef(String ref) {
         if (ref.startsWith("#/components/")) {
             ref = ref.substring(ref.lastIndexOf("/") + 1);
+        } else if (ref.contains("#/")) {
+            ref = ref.substring(ref.lastIndexOf("#/") + 2);
         }
+
         return ref;
     }
 
