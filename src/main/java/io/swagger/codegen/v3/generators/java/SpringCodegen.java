@@ -1,5 +1,8 @@
 package io.swagger.codegen.v3.generators.java;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Helper;
+import com.github.jknack.handlebars.Options;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 import io.swagger.codegen.v3.CliOption;
@@ -129,6 +132,25 @@ public class SpringCodegen extends AbstractJavaCodegen implements BeanValidation
         springBootVersionOption.setEnum(springBootEnum);
         cliOptions.add(springBootVersionOption);
 
+    }
+
+    @Override
+    public void addHandlebarHelpers(Handlebars handlebars) {
+        super.addHandlebarHelpers(handlebars);
+
+        handlebars.registerHelper("hasRealParams", new Helper<CodegenContent>() {
+
+            @Override
+            public Object apply(CodegenContent codegenContent, Options options) throws IOException {
+                for (CodegenParameter param : codegenContent.getParameters()) {
+                    if (!param.vendorExtensions.containsKey("x-doc-only")) {
+                        return options.fn();
+                    }
+                }
+
+                return options.inverse();
+            }
+        });
     }
 
     @Override
