@@ -18,6 +18,7 @@ import io.swagger.codegen.v3.CodegenType;
 import io.swagger.codegen.v3.SupportingFile;
 import io.swagger.codegen.v3.generators.features.BeanValidationFeatures;
 import io.swagger.codegen.v3.generators.features.OptionalFeatures;
+import io.swagger.codegen.v3.generators.handlebars.java.HasParamWithExtensionHelper;
 import io.swagger.codegen.v3.generators.util.OpenAPIUtil;
 import io.swagger.codegen.v3.utils.URLPathUtil;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -137,20 +138,7 @@ public class SpringCodegen extends AbstractJavaCodegen implements BeanValidation
     @Override
     public void addHandlebarHelpers(Handlebars handlebars) {
         super.addHandlebarHelpers(handlebars);
-
-        handlebars.registerHelper("hasRealParams", new Helper<CodegenContent>() {
-
-            @Override
-            public Object apply(CodegenContent codegenContent, Options options) throws IOException {
-                for (CodegenParameter param : codegenContent.getParameters()) {
-                    if (!param.vendorExtensions.containsKey("x-doc-only")) {
-                        return options.fn();
-                    }
-                }
-
-                return options.inverse();
-            }
-        });
+        handlebars.registerHelper("hasRealParams", new HasParamWithExtensionHelper());
     }
 
     @Override
