@@ -14,10 +14,11 @@ public class HasParamWithExtensionHelper implements Helper<CodegenContent> {
 
     @Override
     public Object apply(CodegenContent codegenContent, Options options) throws IOException {
-        //Object extensionKey = options.param(0);
-        Object extensionKey = "x-doc-only";
-        if (codegenContent.getParameters().stream().anyMatch(hasNotExtensionKey(extensionKey))) {
-            return options.fn();
+        if (options.hash("vendorExtension") != null) {
+            Object extensionKey = options.hash("vendorExtension");
+            if (codegenContent.getParameters().stream().anyMatch(hasNotExtensionKey(extensionKey))) {
+                return options.fn();
+            }
         }
 
         return options.inverse();

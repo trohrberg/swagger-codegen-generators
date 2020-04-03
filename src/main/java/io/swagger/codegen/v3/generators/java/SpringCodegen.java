@@ -138,7 +138,7 @@ public class SpringCodegen extends AbstractJavaCodegen implements BeanValidation
     @Override
     public void addHandlebarHelpers(Handlebars handlebars) {
         super.addHandlebarHelpers(handlebars);
-        handlebars.registerHelper("hasRealParams", new HasParamWithExtensionHelper());
+        handlebars.registerHelper("hasParamsWithout", new HasParamWithExtensionHelper());
     }
 
     @Override
